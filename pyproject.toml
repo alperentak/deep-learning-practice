@@ -1,7 +1,13 @@
 [project]
 name = "deep-learning-practice"
 version = "0.1.0"
-description = "Add your description here"
+description = "Derin öğrenme için pratik ortamı"
 readme = "README.md"
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "torch==2.12.0",
+    "torchvision==0.27.0",
+    "torchmetrics==1.9.0",
+    "matplotlib==3.10.9",
+    "tqdm==4.68.3"
+]
