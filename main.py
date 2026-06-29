@@ -2,7 +2,7 @@ import torch
 
 from src.dataset import data_loader_info, load_fashion_mnist
 from src.eval import eval_model
-from src.models import BaselineModel
+from src.models import BaselineModel, CNNModel
 from src.train import train_model
 
 
@@ -20,9 +20,14 @@ def main():
     data_loader_info(test_data_loader)
 
     model_0 = BaselineModel(in_shape=784, hidden_units=10, out_shape=len(class_names))
+    model_1 = CNNModel(in_shape=1, hidden_units=10, out_shape=len(class_names))
 
     train_history = train_model(
-        model=model_0, train_data_loader=train_data_loader, device=device, epochs=50, lr=0.003
+        model=model_1,
+        train_data_loader=train_data_loader,
+        device=device,
+        epochs=50,
+        lr=0.003,
     )
 
     for i in train_history:
@@ -30,7 +35,7 @@ def main():
             print(i)
 
     y_pred, test_metrics = eval_model(
-        model=model_0, test_data_loader=test_data_loader, device=device
+        model=model_1, test_data_loader=test_data_loader, device=device
     )
 
     print(y_pred)
