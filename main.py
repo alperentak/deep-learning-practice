@@ -3,7 +3,7 @@ import torch
 from src.dataset import data_loader_info, load_fashion_mnist
 from src.eval import eval_model
 from src.models import BaselineModel, CNNModel
-from src.train import train_model
+from src.trainer import Trainer
 
 
 def main():
@@ -25,13 +25,15 @@ def main():
     optimizer = torch.optim.Adam(params=model_1.parameters(), lr=0.003)
     loss_fn = torch.nn.CrossEntropyLoss()
 
-    train_history = train_model(
-        model=model_1,
-        train_data_loader=train_data_loader,
+    trainer = Trainer(
         device=device,
         epochs=50,
         optimizer=optimizer,
         loss_fn=loss_fn,
+    )
+
+    train_history = trainer.train_model(
+        model=model_1, train_data_loader=train_data_loader
     )
 
     for i in train_history:
