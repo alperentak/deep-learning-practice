@@ -10,7 +10,6 @@ class Config:
         if not Path(config_path).exists():
             sys.exit("config dosyası bulunamadı!")
         self.config_path = config_path
-        self.conf = null
 
     def read_config(self):
         """
@@ -30,6 +29,7 @@ class Config:
             sys.exit("config: random_seed değeri int olmalıdır!")
 
         # models
+
         if "models" not in conf or conf["models"] == null:
             sys.exit("config: models listesi bulunamadı!")
         if not isinstance(conf["models"], list):
@@ -39,6 +39,7 @@ class Config:
             "type": str,
             "args": dict,
         }
+        unique_model_names = list()
         for model in conf["models"]:
             for key, value in model_keys.items():
                 if key not in model or model[key] == null:
@@ -55,6 +56,9 @@ class Config:
                     + "\n"
                     + "\n".join(f"\t- {i}" for i in model_types)
                 )
+            if model["name"] in unique_model_names:
+                sys.exit("config: model name değeri özgün olmalıdır!")
+            unique_model_names.append(model["name"])
 
         # trainers
 
@@ -71,12 +75,17 @@ class Config:
             "save_model": bool,
             "eval_model": bool,
         }
+        unique_trainer_names = list()
         for trainer in conf["trainers"]:
             for key, value in trainer_keys.items():
                 if key not in trainer or trainer[key] == null:
                     sys.exit(f"config: trainer {key} alanı boş bırakılamaz!")
                 if not isinstance(trainer[key], value):
                     sys.exit(f"config: trainer {key} değeri {value} olmalıdır!")
+
+            if trainer["name"] in unique_trainer_names:
+                sys.exit("config: trainer name değeri özgün olmalıdır!")
+            unique_trainer_names.append(trainer["name"])
 
             # optimizer
             optimizer = trainer["optimizer"]
