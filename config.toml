@@ -1,0 +1,29 @@
+random_seed = 42
+
+### MODELS ###
+
+[[models]]
+name = "model_01"
+type = "BaselineModel"
+
+[models.args]
+input_shape = 784
+hidden_units = 10
+output_shape = 2
+
+### TRAINERS ###
+
+[[trainers]]
+name = "trainer_01"
+epochs = 50
+device = "cuda"
+save_model = true
+eval_model = true
+
+[trainers.loss_fn]
+type = "CrossEntropyLoss"
+args = {}
+
+[trainers.optimizer]
+type = "Adam"
+args = {lr = 0.003}
