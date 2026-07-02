@@ -11,6 +11,16 @@ input_shape = 784
 hidden_units = 10
 output_shape = 2
 
+
+[[models]]
+name = "model_02"
+type = "CNNModel"
+
+[models.args]
+input_shape = 784
+hidden_units = 10
+output_shape = 2
+
 ### TRAINERS ###
 
 [[trainers]]
@@ -26,4 +36,20 @@ args = {}
 
 [trainers.optimizer]
 type = "Adam"
+args = {lr = 0.003}
+
+
+[[trainers]]
+name = "trainer_02"
+epochs = 50
+device = "cuda"
+save_model = true
+eval_model = true
+
+[trainers.loss_fn]
+type = "CrossEntropyLoss"
+args = {}
+
+[trainers.optimizer]
+type = "SGD"
 args = {lr = 0.003}
