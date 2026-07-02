@@ -5,15 +5,17 @@ from torchmetrics import Accuracy
 
 
 def eval_model(
-    model: nn.Module, test_data_loader: DataLoader, device: str
+    model: nn.Module,
+    test_data_loader: DataLoader,
+    device: str,
+    loss_fn: torch.nn.Module,
 ) -> tuple[torch.Tensor, dict]:
     """
     Test verisi üzerinde değer tahmini yapar ve tahminleri ve metrik değerlerini döndürür
     """
 
-    accuracy_fn = Accuracy(task="multiclass", num_classes=10)
-    accuracy_fn = accuracy_fn.to(device)
-    loss_fn = nn.CrossEntropyLoss().to(device)
+    accuracy_fn = Accuracy(task="multiclass", num_classes=10).to(device)
+    loss_fn = loss_fn.to(device)
 
     total_loss: float = 0
     total_acc: float = 0

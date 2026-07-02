@@ -22,12 +22,16 @@ def main():
     model_0 = BaselineModel(in_shape=784, hidden_units=10, out_shape=len(class_names))
     model_1 = CNNModel(in_shape=1, hidden_units=10, out_shape=len(class_names))
 
+    optimizer = torch.optim.Adam(params=model_1.parameters(), lr=0.003)
+    loss_fn = torch.nn.CrossEntropyLoss()
+
     train_history = train_model(
         model=model_1,
         train_data_loader=train_data_loader,
         device=device,
         epochs=50,
-        lr=0.003,
+        optimizer=optimizer,
+        loss_fn=loss_fn,
     )
 
     for i in train_history:
@@ -35,7 +39,7 @@ def main():
             print(i)
 
     y_pred, test_metrics = eval_model(
-        model=model_1, test_data_loader=test_data_loader, device=device
+        model=model_1, test_data_loader=test_data_loader, device=device, loss_fn=loss_fn
     )
 
     print(y_pred)

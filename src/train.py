@@ -10,13 +10,14 @@ from tqdm.auto import tqdm
 def train_model(
     model: nn.Module,
     train_data_loader: DataLoader,
-    lr: float = 0.01,
+    optimizer: torch.optim.Optimizer,
+    loss_fn: torch.nn.Module,
     epochs: int = 200,
     seed: int = 42,
     device: str = "cpu",
 ) -> list[dict]:
     """
-    model'i eğitir ve metrik geçmişini geçen süreyi döndürür
+    model'i eğitir ve metrik geçmişi ile geçen süreyi döndürür
     """
 
     if device == "cuda":
@@ -25,10 +26,9 @@ def train_model(
     else:
         torch.manual_seed(seed)
 
+    loss_fn = loss_fn.to(device)
     model.to(device)
 
-    loss_fn = nn.CrossEntropyLoss()
-    optimizer = torch.optim.Adam(params=model.parameters(), lr=lr)
     accuracy_fn = Accuracy(task="multiclass", num_classes=10).to(device)
 
     history = list()
