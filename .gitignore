@@ -11,3 +11,6 @@ wheels/
 
 # indirilen datasetler
 data/
+
+# kaydedilen modeller
+models/

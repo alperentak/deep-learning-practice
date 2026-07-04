@@ -28,6 +28,13 @@ class Config:
         if not isinstance(conf["random_seed"], int):
             sys.exit("config: random_seed değeri int olmalıdır!")
 
+        # model_save_dir
+        if "model_save_dir" not in conf or conf["model_save_dir"] == null:
+            sys.exit("config: model_save_dir değeri bulunamadı!")
+
+        if not isinstance(conf["model_save_dir"], str):
+            sys.exit("config: model_save_dir değeri int olmalıdır!")
+
         # models
 
         if "models" not in conf or conf["models"] == null:

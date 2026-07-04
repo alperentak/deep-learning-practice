@@ -3,12 +3,12 @@ from torch import nn
 
 
 class BaselineModel(nn.Module):
-    def __init__(self, in_shape: int, hidden_units: int, out_shape: int):
+    def __init__(self, input_shape: int, hidden_units: int, output_shape: int):
         super().__init__()
         self.layer_stack = nn.Sequential(
             nn.Flatten(),
-            nn.Linear(in_features=in_shape, out_features=hidden_units),
-            nn.Linear(in_features=hidden_units, out_features=out_shape),
+            nn.Linear(in_features=input_shape, out_features=hidden_units),
+            nn.Linear(in_features=hidden_units, out_features=output_shape),
         )
 
     def forward(self, x: torch.Tensor):
@@ -16,11 +16,11 @@ class BaselineModel(nn.Module):
 
 
 class CNNModel(nn.Module):
-    def __init__(self, in_shape: int, hidden_units: int, out_shape: int):
+    def __init__(self, input_shape: int, hidden_units: int, output_shape: int):
         super().__init__()
         self.block_1 = nn.Sequential(
             nn.Conv2d(
-                in_channels=in_shape,
+                in_channels=input_shape,
                 out_channels=hidden_units,
                 kernel_size=3,
                 stride=1,
@@ -59,7 +59,7 @@ class CNNModel(nn.Module):
         )
         self.classifier = nn.Sequential(
             nn.Flatten(),
-            nn.Linear(in_features=hidden_units * 7 * 7, out_features=out_shape),
+            nn.Linear(in_features=hidden_units * 7 * 7, out_features=output_shape),
         )
 
     def forward(self, x: torch.Tensor):
