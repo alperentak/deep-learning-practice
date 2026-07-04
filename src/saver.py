@@ -22,9 +22,6 @@ def save_model(
 
     model_save_path = model_save_dir / f"{name}.pt"
 
-    if model_save_path.exists():
-        sys.exit("bu isimde bir model mevcut!")
-
     try:
         torch.save(obj=model.state_dict(), f=model_save_path)
     except Exception as e:

@@ -99,6 +99,12 @@ def train_model(ctx, model_name: str, trainer_name: str, saved_name: str):
     models_conf = conf["models"]
     trainers_conf = conf["trainers"]
 
+    model_save_dir = conf["model_save_dir"]
+    model_save_path = Path(model_save_dir) / f"{saved_name}.pt"
+
+    if model_save_path.exists():
+        sys.exit("bu isimde bir model mevcut!")
+
     model_exist = False
     selected_model: dict
     for model in models_conf:
