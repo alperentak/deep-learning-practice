@@ -2,6 +2,7 @@ import sys
 
 import torch
 
+from src.evaluator import Evaluator
 from src.models import BaselineModel, CNNModel
 from src.trainer import Trainer
 
@@ -65,3 +66,31 @@ def build_trainer(conf: dict, model: torch.nn.Module) -> Trainer:
     )
 
     return trainer
+
+
+def build_evaluator(conf: dict) -> Evaluator:
+    """
+    config değerleriyle evaluator oluşturur
+    """
+    try:
+        if conf["loss_fn"]["type"] == "L1Loss":
+            loss_fn = torch.nn.L1Loss(**conf["loss_fn"]["args"])
+        elif conf["loss_fn"]["type"] == "MSELoss":
+            loss_fn = torch.nn.MSELoss(**conf["loss_fn"]["args"])
+        elif conf["loss_fn"]["type"] == "CrossEntropyLoss":
+            loss_fn = torch.nn.CrossEntropyLoss(**conf["loss_fn"]["args"])
+        elif conf["loss_fn"]["type"] == "BCELoss":
+            loss_fn = torch.nn.BCELoss(**conf["loss_fn"]["args"])
+        elif conf["loss_fn"]["type"] == "BCEWithLogitsLoss":
+            loss_fn = torch.nn.BCEWithLogitsLoss(**conf["loss_fn"]["args"])
+        else:
+            sys.exit("loss type bulunamadı!")
+    except Exception as e:
+        sys.exit(f"loss fonksiyonu oluşturulamadı!\n{e}")
+
+    evaluator: Evaluator = Evaluator(
+        loss_fn=loss_fn,
+        device=conf["device"],
+    )
+
+    return evaluator

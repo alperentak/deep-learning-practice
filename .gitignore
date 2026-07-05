@@ -14,3 +14,6 @@ data/
 
 # kaydedilen modeller
 models/
+
+# evaluation sonuçları
+eval_results.json

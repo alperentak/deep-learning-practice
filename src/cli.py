@@ -4,10 +4,10 @@ from pathlib import Path
 import click
 import torch
 
-from src.builders import build_model, build_trainer
+from src.builders import build_evaluator, build_model, build_trainer
 from src.config import Config
 from src.dataset import load_fashion_mnist
-from src.saver import save_model
+from src.saver import load_model, save_model
 from src.trainer import Trainer
 
 
@@ -59,8 +59,6 @@ def list_trainers(ctx):
         print(f"name: {trainer['name']}")
         print(f"epochs: {trainer['epochs']}")
         print(f"device: {trainer['device']}")
-        print(f"save_model: {trainer['save_model']}")
-        print(f"eval_model: {trainer['eval_model']}")
 
         print("loss_fn:")
         print(f"\ttype: {trainer['loss_fn']['type']}")
@@ -140,4 +138,45 @@ def train_model(ctx, model_name: str, trainer_name: str, saved_name: str):
         name=saved_name,
         model_parameters=selected_model,
         trainer_parameters=selected_trainer,
+    )
+
+
+@cli.command()
+@click.option(
+    "-m", "--model-name", required=True, help="değerlendirilecek modelin ismi"
+)
+@click.option(
+    "-e", "--evaluator-name", required=True, help="kullanılacak evaluator ismi"
+)
+@click.pass_context
+def eval_model(ctx, model_name: str, evaluator_name: str):
+    """
+    eğitilmiş bir modeli değerlendirir ve metrik değerlerini kaydeder
+    """
+    conf: dict = ctx.obj.get("config").conf
+    evaluators_conf = conf["evaluators"]
+    model_save_dir = conf["model_save_dir"]
+
+    model: torch.nn.Module = load_model(model_name, model_save_dir)
+
+    _, test_data_loader, _ = load_fashion_mnist()
+
+    evaluator_exist = False
+    selected_evaluator: dict
+    for evaluator in evaluators_conf:
+        if evaluator["name"] == evaluator_name:
+            selected_evaluator = evaluator
+            evaluator_exist = True
+            break
+
+    if not evaluator_exist:
+        sys.exit(f"{evaluator_name} bulunamadı!")
+
+    evaluator = build_evaluator(conf=selected_evaluator)
+
+    evaluator.eval_model(
+        model=model,
+        test_data_loader=test_data_loader,
+        model_name=model_name,
+        eval_results_path=conf["eval_results_path"],
     )

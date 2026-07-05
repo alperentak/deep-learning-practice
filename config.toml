@@ -1,12 +1,12 @@
 random_seed = 42
-model_save_dir = "models"
+model_save_dir = "./models"
+eval_results_path = "./eval_results.json"
 
 ### MODELS ###
 
 [[models]]
 name = "model_01"
 type = "BaselineModel"
-
 [models.args]
 input_shape = 784
 hidden_units = 10
@@ -16,7 +16,6 @@ output_shape = 10
 [[models]]
 name = "model_02"
 type = "CNNModel"
-
 [models.args]
 input_shape = 1
 hidden_units = 10
@@ -28,13 +27,9 @@ output_shape = 10
 name = "trainer_01"
 epochs = 50
 device = "cuda"
-save_model = true
-eval_model = true
-
 [trainers.loss_fn]
 type = "CrossEntropyLoss"
 args = {}
-
 [trainers.optimizer]
 type = "Adam"
 args = {lr = 0.003}
@@ -44,13 +39,16 @@ args = {lr = 0.003}
 name = "trainer_02"
 epochs = 50
 device = "cuda"
-save_model = true
-eval_model = true
-
 [trainers.loss_fn]
 type = "CrossEntropyLoss"
 args = {}
-
 [trainers.optimizer]
 type = "SGD"
 args = {lr = 0.003}
+
+[[evaluators]]
+name = "eval_01"
+device = "cuda"
+[evaluators.loss_fn]
+type = "CrossEntropyLoss"
+args = {}
