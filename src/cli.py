@@ -140,6 +140,8 @@ def train_model(ctx, model_name: str, trainer_name: str, saved_name: str):
         trainer_parameters=selected_trainer,
     )
 
+    click.echo(f"eğitilen model {conf['model_save_dir']} adresine kaydedildi")
+
 
 @cli.command()
 @click.option(
@@ -180,3 +182,5 @@ def eval_model(ctx, model_name: str, evaluator_name: str):
         model_name=model_name,
         eval_results_path=conf["eval_results_path"],
     )
+
+    click.echo(f"metrik değerleri {conf['eval_results_path']} dosyasına kaydedildi")
