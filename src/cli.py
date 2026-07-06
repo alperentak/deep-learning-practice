@@ -84,6 +84,31 @@ def list_trainers(ctx):
 
 
 @cli.command()
+@click.pass_context
+def list_evaluators(ctx):
+    """
+    evaluator yapılandırmalarını listeler
+    """
+    print()
+    for evaluator in ctx.obj.get("config").conf["evaluators"]:
+        print("-" * 30)
+        print(f"name: {evaluator['name']}")
+        print(f"device: {evaluator['device']}")
+
+        print("loss_fn:")
+        print(f"\ttype: {evaluator['loss_fn']['type']}")
+        print("\targs:")
+        print(
+            "\n".join(
+                f"\t\t{key}: {value}"
+                for key, value in evaluator["loss_fn"]["args"].items()
+            )
+        )
+        print("-" * 30)
+    print()
+
+
+@cli.command()
 @click.option("-m", "--model-name", required=True, help="eğitilecek model ismi")
 @click.option("-t", "--trainer-name", required=True, help="kullanılacak trainer ismi")
 @click.option("-n", "--saved-name", required=True, help="kaydedilen modelin ismi")

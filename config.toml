@@ -46,6 +46,8 @@ args = {}
 type = "SGD"
 args = {lr = 0.003}
 
+### EVALUATORS ###
+
 [[evaluators]]
 name = "eval_01"
 device = "cuda"
