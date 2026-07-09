@@ -4,6 +4,7 @@ from pathlib import Path
 import click
 import torch
 
+from src.utils import set_random_seed
 from src.builders import build_evaluator, build_model, build_trainer
 from src.config import Config
 from src.dataset import load_fashion_mnist
@@ -28,6 +29,8 @@ def cli(ctx: click.Context, config: str):
 
     ctx.ensure_object(dict)
     ctx.obj["config"] = conf
+
+    set_random_seed(conf.conf["random_seed"])
 
 
 @cli.command()
