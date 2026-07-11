@@ -77,3 +77,24 @@ def load_model(name: str, save_dir: str) -> torch.nn.Module:
     model.load_state_dict(torch.load(f=model_save_dir))
 
     return model
+
+
+def is_exist(save_dir: str, model_conf: dict, trainer_conf: dict):
+    save_info_path = Path(save_dir) / "saved_models.json"
+
+    if not save_info_path.exists():
+        save_info_path.write_text("{}")
+
+    try:
+        with open(save_info_path, "r", encoding="utf-8") as f:
+            saved_models = json.load(f)
+    except Exception as e:
+        sys.exit(f"kayıt içeriği okunamadı!\n{e}")
+
+    for saved_name, saved_conf in saved_models.items():
+        saved_model_conf = saved_conf["model"]
+        saved_trainer_conf = saved_conf["trainer"]
+
+        if saved_model_conf == model_conf and saved_trainer_conf == trainer_conf:
+            return True
+    return False
