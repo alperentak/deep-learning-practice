@@ -3,6 +3,7 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
+import click
 import torch
 from torch.utils.data import DataLoader
 from torchmetrics import Accuracy
@@ -66,12 +67,15 @@ class Evaluator:
         except Exception as e:
             sys.exit(f"{eval_results_json} dosyası okunamadı!\n{e}")
 
-        eval_results[
-            model_name + "_" + datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        ] = metrics
+        eval_name = model_name + "_" + datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        eval_results[eval_name] = metrics
 
         try:
             with open(eval_results_json, "w", encoding="utf-8") as f:
                 json.dump(eval_results, f, indent=4, ensure_ascii=False)
         except Exception as e:
             sys.exit(f"{eval_results_json} dosyasına yazılamadı!\n{e}")
+
+        click.echo(
+            f"{eval_name}: eval değerleri {eval_results_json} adresine kaydedildi"
+        )

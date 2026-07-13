@@ -2,6 +2,7 @@ import json
 import sys
 from pathlib import Path
 
+import click
 import torch
 
 from src.builders import build_model
@@ -54,6 +55,8 @@ class Saver:
                 json.dump(all_saved_models, f, indent=4, ensure_ascii=False)
         except Exception as e:
             sys.exit(f"kayıt dosyasına yazılamadı!\n{e}")
+
+        click.echo(f"{save_name}, {model_save_path} adresine kaydedildi")
 
     def load_model(self, save_name: str) -> torch.nn.Module:
         if not self.save_info_path.exists():

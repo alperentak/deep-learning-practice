@@ -85,10 +85,12 @@ class PipelineRunner:
                 model_conf=selected_model_conf,
                 trainer_conf=selected_trainer_conf,
             ):
+                click.echo()
                 click.echo(f"bu model zaten eğitilmiş: {pipeline['name']}")
                 continue
 
-            click.echo(f"model eğitiliyor: {pipeline['name']}")
+            click.echo()
+            click.secho(f"model eğitiliyor: {pipeline['name']}", bold=True)
             model = build_model(selected_model_conf)
             trainer = build_trainer(conf=selected_trainer_conf, model=model)
             evaluator = build_evaluator(selected_trainer_conf)
