@@ -26,6 +26,13 @@ class Config:
         if not isinstance(conf["random_seed"], int):
             sys.exit("config: random_seed değeri int olmalıdır!")
 
+        # pipeline_config_path
+        if "pipeline_config_path" not in conf or conf["pipeline_config_path"] is None:
+            sys.exit("config: pipeline_config_path değeri bulunamadı!")
+
+        if not isinstance(conf["pipeline_config_path"], str):
+            sys.exit("config: pipeline_config_path değeri int olmalıdır!")
+
         # model_save_dir
         if "model_save_dir" not in conf or conf["model_save_dir"] is None:
             sys.exit("config: model_save_dir değeri bulunamadı!")

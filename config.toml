@@ -1,4 +1,5 @@
 random_seed = 42
+pipeline_config_path = "./pipeline.toml"
 model_save_dir = "./models"
 eval_results_path = "./eval_results.json"
 

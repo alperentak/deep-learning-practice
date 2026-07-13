@@ -31,11 +31,9 @@ def cli(ctx: click.Context, config: str):
 
 @cli.command()
 @click.pass_context
-def run_pipeline(ctx, pipeline_config_path: str = "./pipeline.toml"):
+def run_pipeline(ctx):
     conf: dict = ctx.obj.get("config").conf
-
-    if not Path(pipeline_config_path).exists():
-        sys.exit(f"pipeline config dosyası bulunamadı!\n{pipeline_config_path}")
+    pipeline_config_path: str = conf["pipeline_config_path"]
 
     pipeline_runner = PipelineRunner(
         pipeline_config_path=pipeline_config_path,
