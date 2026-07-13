@@ -5,7 +5,7 @@ import click
 
 from src.builders import build_evaluator, build_model, build_trainer
 from src.dataset import load_fashion_mnist
-from src.saver import is_exist, save_model
+from src.saver import Saver
 
 
 class PipelineRunner:
@@ -16,6 +16,7 @@ class PipelineRunner:
     ):
         self.pipelines: dict = self._read_conf(pipeline_config_path)
         self.config = config
+        self.saver = Saver(save_dir=config["model_save_dir"])
 
     def _read_conf(self, config_path: str) -> dict:
         try:
@@ -80,8 +81,7 @@ class PipelineRunner:
             if not trainer_exist:
                 sys.exit(f"{trainer_name} bulunamadı!")
 
-            if is_exist(
-                save_dir=model_save_dir,
+            if self.saver.is_saved(
                 model_conf=selected_model_conf,
                 trainer_conf=selected_trainer_conf,
             ):
@@ -96,10 +96,9 @@ class PipelineRunner:
 
             trainer.train_model(model=model, train_data_loader=train_data_loader)
 
-            save_model(
+            self.saver.save_model(
                 model=model,
-                save_dir=model_save_dir,
-                name=pipeline["name"],
+                save_name=pipeline["name"],
                 model_parameters=selected_model_conf,
                 trainer_parameters=selected_trainer_conf,
             )

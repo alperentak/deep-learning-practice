@@ -7,94 +7,93 @@ import torch
 from src.builders import build_model
 
 
-def save_model(
-    model: torch.nn.Module,
-    save_dir: str,
-    name: str,
-    model_parameters: dict,
-    trainer_parameters: dict,
-):
-    """
-    model state_dict kaydeder ve kayıt bilgilerini tutar
-    """
-    model_save_dir = Path(save_dir)
-    model_save_dir.mkdir(parents=True, exist_ok=True)
+class Saver:
+    def __init__(self, save_dir: str):
+        self.save_dir = Path(save_dir)
+        self.save_dir.mkdir(parents=True, exist_ok=True)
+        self.save_info_path = self.save_dir / "saved_models.json"
 
-    model_save_path = model_save_dir / f"{name}.pt"
+    def save_model(
+        self,
+        model: torch.nn.Module,
+        save_name: str,
+        model_parameters: dict,
+        trainer_parameters: dict,
+    ):
+        """
+        model state_dict kaydeder ve kayıt bilgilerini tutar
+        """
 
-    try:
-        torch.save(obj=model.state_dict(), f=model_save_path)
-    except Exception as e:
-        sys.exit(f"model kaydedilemedi!\n{e}")
+        model_save_path = self.save_dir / f"{save_name}.pt"
 
-    save_info = {
-        "path": str(model_save_path),
-        "model": model_parameters,
-        "trainer": trainer_parameters,
-    }
+        try:
+            torch.save(obj=model.state_dict(), f=model_save_path)
+        except Exception as e:
+            sys.exit(f"model kaydedilemedi!\n{e}")
 
-    save_info_path = Path(save_dir) / "saved_models.json"
+        save_info = {
+            "path": str(model_save_path),
+            "model": model_parameters,
+            "trainer": trainer_parameters,
+        }
 
-    if not save_info_path.exists():
-        save_info_path.write_text("{}")
+        if not self.save_info_path.exists():
+            self.save_info_path.write_text("{}")
 
-    all_saved_models = dict()
-    try:
-        with open(save_info_path, "r", encoding="utf-8") as f:
-            all_saved_models = json.load(f)
-    except Exception as e:
-        sys.exit(f"kayıt dosyası okunamadı!{e}")
+        all_saved_models = dict()
+        try:
+            with open(self.save_info_path, "r", encoding="utf-8") as f:
+                all_saved_models = json.load(f)
+        except Exception as e:
+            sys.exit(f"kayıt dosyası okunamadı!{e}")
 
-    all_saved_models[name] = save_info
+        all_saved_models[save_name] = save_info
 
-    try:
-        with open(save_info_path, "w", encoding="utf-8") as f:
-            json.dump(all_saved_models, f, indent=4, ensure_ascii=False)
-    except Exception as e:
-        sys.exit(f"kayıt dosyasına yazılamadı!\n{e}")
+        try:
+            with open(self.save_info_path, "w", encoding="utf-8") as f:
+                json.dump(all_saved_models, f, indent=4, ensure_ascii=False)
+        except Exception as e:
+            sys.exit(f"kayıt dosyasına yazılamadı!\n{e}")
 
+    def load_model(self, save_name: str) -> torch.nn.Module:
+        if not self.save_info_path.exists():
+            sys.exit("kayıt içeriği bulunamadı!")
 
-def load_model(name: str, save_dir: str) -> torch.nn.Module:
-    save_info_path = Path(save_dir) / "saved_models.json"
+        try:
+            with open(self.save_info_path, "r", encoding="utf-8") as f:
+                loaded_info = json.load(f)
+        except Exception as e:
+            sys.exit(f"kayıt içeriği okunamadı!\n{e}")
 
-    if not save_info_path.exists():
-        sys.exit("kayıt içeriği bulunamadı!")
+        if save_name not in loaded_info.keys():
+            sys.exit("bu isimde kayıtlı model bulunamadı")
 
-    try:
-        with open(save_info_path, "r", encoding="utf-8") as f:
-            loaded_info = json.load(f)
-    except Exception as e:
-        sys.exit(f"kayıt içeriği okunamadı!\n{e}")
+        model_info = loaded_info[save_name]["model"]
+        model_save_dir = loaded_info[save_name]["path"]
 
-    if name not in loaded_info.keys():
-        sys.exit("bu isimde kayıtlı model bulunamadı")
+        model: torch.nn.Module = build_model(model_info)
 
-    model_info = loaded_info[name]["model"]
-    model_save_dir = loaded_info[name]["path"]
+        model.load_state_dict(torch.load(f=model_save_dir))
 
-    model: torch.nn.Module = build_model(model_info)
+        return model
 
-    model.load_state_dict(torch.load(f=model_save_dir))
+    def is_saved(self, model_conf: dict, trainer_conf) -> bool:
+        """
+        aynı model ve trainer parametrelerine sahip bir modelin kaydedilme durumunu kontrol eder
+        """
+        if not self.save_info_path.exists():
+            return False
 
-    return model
+        try:
+            with open(self.save_info_path, "r", encoding="utf-8") as f:
+                saved_models = json.load(f)
+        except Exception as e:
+            sys.exit(f"kayıt içeriği okunamadı!\n{e}")
 
+        for _, saved_conf in saved_models.items():
+            saved_model_conf = saved_conf["model"]
+            saved_trainer_conf = saved_conf["trainer"]
 
-def is_exist(save_dir: str, model_conf: dict, trainer_conf: dict):
-    save_info_path = Path(save_dir) / "saved_models.json"
-
-    if not save_info_path.exists():
-        save_info_path.write_text("{}")
-
-    try:
-        with open(save_info_path, "r", encoding="utf-8") as f:
-            saved_models = json.load(f)
-    except Exception as e:
-        sys.exit(f"kayıt içeriği okunamadı!\n{e}")
-
-    for saved_name, saved_conf in saved_models.items():
-        saved_model_conf = saved_conf["model"]
-        saved_trainer_conf = saved_conf["trainer"]
-
-        if saved_model_conf == model_conf and saved_trainer_conf == trainer_conf:
-            return True
-    return False
+            if saved_model_conf == model_conf and saved_trainer_conf == trainer_conf:
+                return True
+        return False
