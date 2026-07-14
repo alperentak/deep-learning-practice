@@ -19,33 +19,20 @@ class Config:
             except Exception as e:
                 sys.exit(f"config okunamadı:\n{e}")
 
-        # random_seed
-        if "random_seed" not in conf or conf["random_seed"] is None:
-            sys.exit("config: random_seed değeri bulunamadı!")
-
-        if not isinstance(conf["random_seed"], int):
-            sys.exit("config: random_seed değeri int olmalıdır!")
-
-        # pipeline_config_path
-        if "pipeline_config_path" not in conf or conf["pipeline_config_path"] is None:
-            sys.exit("config: pipeline_config_path değeri bulunamadı!")
-
-        if not isinstance(conf["pipeline_config_path"], str):
-            sys.exit("config: pipeline_config_path değeri int olmalıdır!")
-
-        # model_save_dir
-        if "model_save_dir" not in conf or conf["model_save_dir"] is None:
-            sys.exit("config: model_save_dir değeri bulunamadı!")
-
-        if not isinstance(conf["model_save_dir"], str):
-            sys.exit("config: model_save_dir değeri int olmalıdır!")
-
-        # eval_results_path
-        if "eval_results_path" not in conf or conf["eval_results_path"] is None:
-            sys.exit("config: eval_results_path değeri bulunamadı!")
-
-        if not isinstance(conf["eval_results_path"], str):
-            sys.exit("config: eval_results_path değeri int olmalıdır!")
+        config_keys = {
+            "random_seed": int,
+            "pipeline_config_path": str,
+            "model_save_dir": str,
+            "eval_results_path": str,
+            "models": list,
+            "trainers": list,
+            "evaluators": list,
+        }
+        for key, data_type in config_keys.items():
+            if key not in conf or conf[key] is None:
+                sys.exit(f"config: model {key} alanı boş bırakılamaz!")
+            if not isinstance(conf[key], data_type):
+                sys.exit(f"config: model {key} değeri {data_type} türünde olmalıdır!")
 
         # models
 
