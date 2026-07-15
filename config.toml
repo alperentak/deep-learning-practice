@@ -3,6 +3,24 @@ pipeline_config_path = "./pipeline.toml"
 model_save_dir = "./models"
 eval_results_path = "./eval_results.json"
 
+### DATASETS ###
+
+[[datasets]]
+name = "dataset_01"
+data_dir = "./data/PetImages/"
+
+    [[datasets.transforms]]
+    name = "Resize"
+    args = [[224, 224]]
+
+    [[datasets.transforms]]
+    name = "RandomHorizontalFlip"
+    args = [0.5]
+
+    [[datasets.transforms]]
+    name = "ToTensor"
+
+
 ### MODELS ###
 
 [[models]]

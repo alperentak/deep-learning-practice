@@ -24,6 +24,7 @@ class Config:
             "pipeline_config_path": str,
             "model_save_dir": str,
             "eval_results_path": str,
+            "datasets": list,
             "models": list,
             "trainers": list,
             "evaluators": list,
@@ -33,6 +34,28 @@ class Config:
                 sys.exit(f"config: model {key} alanı boş bırakılamaz!")
             if not isinstance(conf[key], data_type):
                 sys.exit(f"config: model {key} değeri {data_type} türünde olmalıdır!")
+
+        # datasets
+
+        if "datasets" not in conf or conf["datasets"] is None:
+            sys.exit("config: datasets listesi bulunamadı!")
+        if not isinstance(conf["datasets"], list):
+            sys.exit("config: datasets değeri list olmalıdır!")
+        dataset_keys = {
+            "name": str,
+            "data_dir": str,
+            "transforms": list,
+        }
+        unique_dataset_names = list()
+        for dataset in conf["datasets"]:
+            for key, value in dataset_keys.items():
+                if key not in dataset or dataset[key] is None:
+                    sys.exit(f"config: dataset {key} alanı boş bırakılamaz!")
+                if not isinstance(dataset[key], value):
+                    sys.exit(f"config: dataset {key} değeri {value} olmalıdır!")
+            if dataset["name"] in unique_dataset_names:
+                sys.exit("config: dataset name değeri özgün olmalıdır!")
+            unique_dataset_names.append(dataset["name"])
 
         # models
 
