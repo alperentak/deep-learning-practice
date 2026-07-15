@@ -1,6 +1,33 @@
-from torch.utils.data import DataLoader
+from PIL import Image
+from torch.utils.data import DataLoader, Dataset
 from torchvision import datasets
 from torchvision.transforms import ToTensor
+
+
+class ImageDataset(Dataset):
+    def __init__(
+        self,
+        classes: dict,
+        data_list: list[dict],
+        transform,
+    ):
+        self.classes = classes
+        self.data_list = data_list
+        self.transform = transform
+
+    def __len__(self):
+        return len(self.data_list)
+
+    def __getitem__(self, index: int):
+        item_path = self.data_list[index]["path"]
+        label = self.data_list[index]["label"]
+
+        item = Image.open(item_path).convert("RGB")
+
+        if self.transform:
+            return self.transform(item), label
+
+        return item, label
 
 
 def load_fashion_mnist(batch_size: int = 32) -> tuple[DataLoader, DataLoader, list]:
