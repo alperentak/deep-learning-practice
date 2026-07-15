@@ -31,7 +31,8 @@ def cli(ctx: click.Context, config: str):
 
 @cli.command()
 @click.pass_context
-def run_pipeline(ctx):
+def run_pipelines(ctx):
+    """config dosyasında belirtilen pipeline'ları çalıştır"""
     conf: dict = ctx.obj.get("config").conf
     pipeline_config_path: str = conf["pipeline_config_path"]
 
