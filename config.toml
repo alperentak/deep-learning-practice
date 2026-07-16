@@ -8,16 +8,21 @@ eval_results_path = "./eval_results.json"
 [[datasets]]
 name = "dataset_01"
 data_dir = "./data/PetImages/"
+train_test_split = 0.8
 
-    [[datasets.transforms]]
+    [[datasets.train.transforms]]
     name = "Resize"
     args = [[224, 224]]
-
-    [[datasets.transforms]]
+    [[datasets.train.transforms]]
     name = "RandomHorizontalFlip"
     args = [0.5]
+    [[datasets.train.transforms]]
+    name = "ToTensor"
 
-    [[datasets.transforms]]
+    [[datasets.test.transforms]]
+    name = "Resize"
+    args = [[224, 224]]
+    [[datasets.test.transforms]]
     name = "ToTensor"
 
 
