@@ -26,7 +26,7 @@ data_dir = "./data/PetImages/"
 [[models]]
 name = "model_01"
 type = "BaselineModel"
-[models.args]
+[models.kwargs]
 input_shape = 784
 hidden_units = 10
 output_shape = 10
@@ -35,7 +35,7 @@ output_shape = 10
 [[models]]
 name = "model_02"
 type = "CNNModel"
-[models.args]
+[models.kwargs]
 input_shape = 1
 hidden_units = 10
 output_shape = 10
@@ -48,10 +48,10 @@ epochs = 50
 device = "cuda"
 [trainers.loss_fn]
 type = "CrossEntropyLoss"
-args = {}
+kwargs = {}
 [trainers.optimizer]
 type = "Adam"
-args = {lr = 0.003}
+kwargs = {lr = 0.003}
 
 
 [[trainers]]
@@ -60,10 +60,10 @@ epochs = 50
 device = "cuda"
 [trainers.loss_fn]
 type = "CrossEntropyLoss"
-args = {}
+kwargs = {}
 [trainers.optimizer]
 type = "SGD"
-args = {lr = 0.003}
+kwargs = {lr = 0.003}
 
 ### EVALUATORS ###
 
@@ -72,4 +72,4 @@ name = "eval_01"
 device = "cuda"
 [evaluators.loss_fn]
 type = "CrossEntropyLoss"
-args = {}
+kwargs = {}

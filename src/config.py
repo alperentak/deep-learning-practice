@@ -66,7 +66,7 @@ class Config:
         model_keys = {
             "name": str,
             "type": str,
-            "args": dict,
+            "kwargs": dict,
         }
         unique_model_names = list()
         for model in conf["models"]:
