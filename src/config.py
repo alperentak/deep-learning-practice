@@ -21,7 +21,7 @@ class Config:
 
         config_keys = {
             "random_seed": int,
-            "pipeline_config_path": str,
+            "experiment_config_path": str,
             "model_save_dir": str,
             "eval_results_path": str,
             "datasets": list,

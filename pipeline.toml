@@ -1,9 +1,0 @@
-[[pipelines]]
-name = "pipeline_test_01"
-model = "model_01"
-trainer = "trainer_01"
-
-[[pipelines]]
-name = "pipeline_test_02"
-model = "model_02"
-trainer = "trainer_02"

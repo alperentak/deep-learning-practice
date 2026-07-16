@@ -4,7 +4,7 @@ from pathlib import Path
 import click
 
 from src.config import Config
-from src.pipeline import PipelineRunner
+from src.experiment import ExperimentRunner
 from src.utils import set_random_seed
 
 
@@ -31,13 +31,13 @@ def cli(ctx: click.Context, config: str):
 
 @cli.command()
 @click.pass_context
-def run_pipelines(ctx):
-    """config dosyasında belirtilen pipeline'ları çalıştır"""
+def run_experiments(ctx):
+    """config dosyasında belirtilen experiment'ları çalıştır"""
     conf: dict = ctx.obj.get("config").conf
-    pipeline_config_path: str = conf["pipeline_config_path"]
+    experiment_config_path: str = conf["experiment_config_path"]
 
-    pipeline_runner = PipelineRunner(
-        pipeline_config_path=pipeline_config_path,
+    experiment_runner = ExperimentRunner(
+        experiment_config_path=experiment_config_path,
         config=conf,
     )
-    pipeline_runner.run_pipelines()
+    experiment_runner.run_experiments()

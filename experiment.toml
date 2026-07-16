@@ -1,0 +1,9 @@
+[[experiments]]
+name = "experiment_test_01"
+model = "model_01"
+trainer = "trainer_01"
+
+[[experiments]]
+name = "experiment_test_02"
+model = "model_02"
+trainer = "trainer_02"

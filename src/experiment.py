@@ -8,13 +8,13 @@ from src.dataset import load_fashion_mnist
 from src.saver import Saver
 
 
-class PipelineRunner:
+class ExperimentRunner:
     def __init__(
         self,
-        pipeline_config_path: str,
+        experiment_config_path: str,
         config: dict,
     ):
-        self.pipelines: dict = self._read_conf(pipeline_config_path)
+        self.experiments: dict = self._read_conf(experiment_config_path)
         self.config = config
         self.saver = Saver(save_dir=config["model_save_dir"])
 
@@ -23,41 +23,41 @@ class PipelineRunner:
             with open(config_path, "rb") as f:
                 config = tomllib.load(f)
         except Exception as e:
-            sys.exit(f"pipeline config dosyası okunamadı!\n{e}")
+            sys.exit(f"experiment config dosyası okunamadı!\n{e}")
 
-        if "pipelines" not in config or config["pipelines"] is None:
-            sys.exit("pipeline config: pipelines listesi bulunamadı!")
-        if not isinstance(config["pipelines"], list):
-            sys.exit("pipeline config: pipelines değeri list olmalıdır!")
-        pipeline_keys = {
+        if "experiments" not in config or config["experiments"] is None:
+            sys.exit("experiment config: experiments listesi bulunamadı!")
+        if not isinstance(config["experiments"], list):
+            sys.exit("experiment config: experiments değeri list olmalıdır!")
+        experiment_keys = {
             "name": str,
             "model": str,
             "trainer": str,
         }
-        unique_pipeline_names = list()
-        for pipeline in config["pipelines"]:
-            for key, value in pipeline_keys.items():
-                if key not in pipeline or pipeline[key] is None:
-                    sys.exit(f"pipeline config: pipeline {key} alanı boş bırakılamaz!")
-                if not isinstance(pipeline[key], value):
+        unique_experiment_names = list()
+        for experiment in config["experiments"]:
+            for key, value in experiment_keys.items():
+                if key not in experiment or experiment[key] is None:
+                    sys.exit(f"experiment config: experiment {key} alanı boş bırakılamaz!")
+                if not isinstance(experiment[key], value):
                     sys.exit(
-                        f"pipeline config: pipeline {key} değeri {value} olmalıdır!"
+                        f"experiment config: experiment {key} değeri {value} olmalıdır!"
                     )
-            if pipeline["name"] in unique_pipeline_names:
-                sys.exit("pipeline config: pipeline name değeri özgün olmalıdır!")
-            unique_pipeline_names.append(pipeline["name"])
+            if experiment["name"] in unique_experiment_names:
+                sys.exit("experiment config: experiment name değeri özgün olmalıdır!")
+            unique_experiment_names.append(experiment["name"])
 
-        return config["pipelines"]
+        return config["experiments"]
 
-    def run_pipelines(self):
+    def run_experiments(self):
         models_conf = self.config["models"]
         trainers_conf = self.config["trainers"]
 
         model_save_dir = self.config["model_save_dir"]
 
-        for pipeline in self.pipelines:
-            model_name = pipeline["model"]
-            trainer_name = pipeline["trainer"]
+        for experiment in self.experiments:
+            model_name = experiment["model"]
+            trainer_name = experiment["trainer"]
 
             model_exist = False
             selected_model_conf: dict
@@ -86,11 +86,11 @@ class PipelineRunner:
                 trainer_conf=selected_trainer_conf,
             ):
                 click.echo()
-                click.echo(f"bu model zaten eğitilmiş: {pipeline['name']}")
+                click.echo(f"bu model zaten eğitilmiş: {experiment['name']}")
                 continue
 
             click.echo()
-            click.secho(f"model eğitiliyor: {pipeline['name']}", bold=True)
+            click.secho(f"model eğitiliyor: {experiment['name']}", bold=True)
             model = build_model(selected_model_conf)
             trainer = build_trainer(conf=selected_trainer_conf, model=model)
             evaluator = build_evaluator(selected_trainer_conf)
@@ -100,7 +100,7 @@ class PipelineRunner:
 
             self.saver.save_model(
                 model=model,
-                save_name=pipeline["name"],
+                save_name=experiment["name"],
                 model_parameters=selected_model_conf,
                 trainer_parameters=selected_trainer_conf,
             )
@@ -108,6 +108,6 @@ class PipelineRunner:
             evaluator.eval_model(
                 model=model,
                 test_data_loader=test_data_loader,
-                model_name=pipeline["name"],
+                model_name=experiment["name"],
                 eval_results_path=self.config["eval_results_path"],
             )
