@@ -99,6 +99,8 @@ class ExperimentRunner:
             if self.saver.is_saved(
                 model_conf=experiment_conf["model"],
                 trainer_conf=experiment_conf["trainer"],
+                dataset_conf=experiment_conf["dataset"],
+                dataloader_conf=experiment_conf["dataloader"],
             ):
                 click.echo()
                 click.echo(f"bu model zaten eğitilmiş: {experiment['name']}")
@@ -123,6 +125,8 @@ class ExperimentRunner:
                 save_name=experiment["name"],
                 model_parameters=experiment_conf["model"],
                 trainer_parameters=experiment_conf["trainer"],
+                dataset_parameters=experiment_conf["dataset"],
+                dataloader_parameters=experiment_conf["dataloader"],
             )
 
             evaluator.eval_model(

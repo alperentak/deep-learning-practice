@@ -20,6 +20,8 @@ class Saver:
         save_name: str,
         model_parameters: dict,
         trainer_parameters: dict,
+        dataset_parameters: dict,
+        dataloader_parameters: dict,
     ):
         """
         model state_dict kaydeder ve kayıt bilgilerini tutar
@@ -36,6 +38,8 @@ class Saver:
             "path": str(model_save_path),
             "model": model_parameters,
             "trainer": trainer_parameters,
+            "dataset": dataset_parameters,
+            "dataloader": dataloader_parameters,
         }
 
         if not self.save_info_path.exists():
@@ -80,7 +84,13 @@ class Saver:
 
         return model
 
-    def is_saved(self, model_conf: dict, trainer_conf) -> bool:
+    def is_saved(
+        self,
+        model_conf: dict,
+        trainer_conf: dict,
+        dataset_conf: dict,
+        dataloader_conf: dict,
+    ) -> bool:
         """
         aynı model ve trainer parametrelerine sahip bir modelin kaydedilme durumunu kontrol eder
         """
@@ -96,7 +106,14 @@ class Saver:
         for _, saved_conf in saved_models.items():
             saved_model_conf = saved_conf["model"]
             saved_trainer_conf = saved_conf["trainer"]
+            saved_dataset_conf = saved_conf["dataset"]
+            saved_dataloader_conf = saved_conf["dataloader"]
 
-            if saved_model_conf == model_conf and saved_trainer_conf == trainer_conf:
+            if (
+                saved_model_conf == model_conf
+                and saved_trainer_conf == trainer_conf
+                and saved_dataset_conf == dataset_conf
+                and saved_dataloader_conf == dataloader_conf
+            ):
                 return True
         return False
