@@ -3,8 +3,8 @@ import tomllib
 
 import click
 
-from src.builders import build_evaluator, build_model, build_trainer
-from src.dataset import load_fashion_mnist
+from src.builders import (build_dataloader, build_dataset, build_evaluator,
+                          build_model, build_trainer)
 from src.saver import Saver
 
 
@@ -33,12 +33,16 @@ class ExperimentRunner:
             "name": str,
             "model": str,
             "trainer": str,
+            "dataset": str,
+            "dataloader": str,
         }
         unique_experiment_names = list()
         for experiment in config["experiments"]:
             for key, value in experiment_keys.items():
                 if key not in experiment or experiment[key] is None:
-                    sys.exit(f"experiment config: experiment {key} alanı boş bırakılamaz!")
+                    sys.exit(
+                        f"experiment config: experiment {key} alanı boş bırakılamaz!"
+                    )
                 if not isinstance(experiment[key], value):
                     sys.exit(
                         f"experiment config: experiment {key} değeri {value} olmalıdır!"
@@ -50,40 +54,51 @@ class ExperimentRunner:
         return config["experiments"]
 
     def run_experiments(self):
-        models_conf = self.config["models"]
-        trainers_conf = self.config["trainers"]
-
-        model_save_dir = self.config["model_save_dir"]
 
         for experiment in self.experiments:
-            model_name = experiment["model"]
-            trainer_name = experiment["trainer"]
+            experiment_conf = {
+                "model": dict(),
+                "trainer": dict(),
+                "dataset": dict(),
+                "dataloader": dict(),
+            }
 
-            model_exist = False
-            selected_model_conf: dict
-            for model_conf in models_conf:
-                if model_conf["name"] == model_name:
-                    selected_model_conf = model_conf
-                    model_exist = True
-                    break
+            components = [
+                {
+                    "type": "model",
+                    "config_section": "models",
+                    "name": experiment["model"],
+                },
+                {
+                    "type": "trainer",
+                    "config_section": "trainers",
+                    "name": experiment["trainer"],
+                },
+                {
+                    "type": "dataset",
+                    "config_section": "datasets",
+                    "name": experiment["dataset"],
+                },
+                {
+                    "type": "dataloader",
+                    "config_section": "dataloaders",
+                    "name": experiment["dataloader"],
+                },
+            ]
 
-            if not model_exist:
-                sys.exit(f"{model_name} bulunamadı!")
+            for component in components:
+                component_exist = False
+                for comp in self.config[component["config_section"]]:
+                    if component["name"] == comp["name"]:
+                        experiment_conf[component["type"]] = comp
+                        component_exist = True
 
-            trainer_exist = False
-            selected_trainer_conf: dict
-            for trainer_conf in trainers_conf:
-                if trainer_conf["name"] == trainer_name:
-                    selected_trainer_conf = trainer_conf
-                    trainer_exist = True
-                    break
-
-            if not trainer_exist:
-                sys.exit(f"{trainer_name} bulunamadı!")
+                if not component_exist:
+                    sys.exit(f"{component} bulunamadı!")
 
             if self.saver.is_saved(
-                model_conf=selected_model_conf,
-                trainer_conf=selected_trainer_conf,
+                model_conf=experiment_conf["model"],
+                trainer_conf=experiment_conf["trainer"],
             ):
                 click.echo()
                 click.echo(f"bu model zaten eğitilmiş: {experiment['name']}")
@@ -91,23 +106,28 @@ class ExperimentRunner:
 
             click.echo()
             click.secho(f"model eğitiliyor: {experiment['name']}", bold=True)
-            model = build_model(selected_model_conf)
-            trainer = build_trainer(conf=selected_trainer_conf, model=model)
-            evaluator = build_evaluator(selected_trainer_conf)
-            train_data_loader, test_data_loader, _ = load_fashion_mnist()
+            model = build_model(experiment_conf["model"])
+            trainer = build_trainer(conf=experiment_conf["trainer"], model=model)
+            evaluator = build_evaluator(experiment_conf["trainer"])
+            train_dataset, test_dataset = build_dataset(experiment_conf["dataset"])
+            train_dataloader, test_dataloader = build_dataloader(
+                conf=experiment_conf["dataloader"],
+                train_dataset=train_dataset,
+                test_dataset=test_dataset,
+            )
 
-            trainer.train_model(model=model, train_data_loader=train_data_loader)
+            trainer.train_model(model=model, train_data_loader=train_dataloader)
 
             self.saver.save_model(
                 model=model,
                 save_name=experiment["name"],
-                model_parameters=selected_model_conf,
-                trainer_parameters=selected_trainer_conf,
+                model_parameters=experiment_conf["model"],
+                trainer_parameters=experiment_conf["trainer"],
             )
 
             evaluator.eval_model(
                 model=model,
-                test_data_loader=test_data_loader,
+                test_data_loader=test_dataloader,
                 model_name=experiment["name"],
                 eval_results_path=self.config["eval_results_path"],
             )

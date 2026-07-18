@@ -2,8 +2,26 @@
 name = "experiment_test_01"
 model = "model_01"
 trainer = "trainer_01"
+dataset = "dataset_01"
+dataloader = "dataloader_01"
 
 [[experiments]]
 name = "experiment_test_02"
 model = "model_02"
 trainer = "trainer_02"
+dataset = "dataset_01"
+dataloader = "dataloader_01"
+
+[[experiments]]
+name = "experiment_test_03"
+model = "model_01"
+trainer = "trainer_01"
+dataset = "dataset_02"
+dataloader = "dataloader_01"
+
+[[experiments]]
+name = "experiment_test_04"
+model = "model_02"
+trainer = "trainer_02"
+dataset = "dataset_02"
+dataloader = "dataloader_01"

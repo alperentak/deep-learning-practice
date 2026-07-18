@@ -4,7 +4,7 @@ from pathlib import Path
 
 import click
 import torch
-from torch.utils.data import Dataset
+from torch.utils.data import DataLoader, Dataset
 from torchvision import transforms
 
 from src.dataset import ImageDataset
@@ -173,3 +173,14 @@ def build_dataset(conf: dict) -> tuple[Dataset, Dataset]:
     )
 
     return train_dataset, test_dataset
+
+
+def build_dataloader(
+    conf: dict,
+    train_dataset: Dataset,
+    test_dataset: Dataset,
+) -> tuple[DataLoader, DataLoader]:
+    train_dataloader = DataLoader(dataset=train_dataset, **conf["train"]["kwargs"])
+    test_dataloader = DataLoader(dataset=test_dataset, **conf["test"]["kwargs"])
+
+    return train_dataloader, test_dataloader

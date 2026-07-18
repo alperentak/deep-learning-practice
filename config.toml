@@ -25,6 +25,36 @@ train_test_split = 0.8
     [[datasets.test.transforms]]
     name = "ToTensor"
 
+[[datasets]]
+name = "dataset_02"
+data_dir = "./data/pizza_steak_sushi/"
+train_test_split = 0.8
+
+    [[datasets.train.transforms]]
+    name = "Resize"
+    args = [[224, 224]]
+    [[datasets.train.transforms]]
+    name = "RandomHorizontalFlip"
+    args = [0.5]
+    [[datasets.train.transforms]]
+    name = "ToTensor"
+
+    [[datasets.test.transforms]]
+    name = "Resize"
+    args = [[224, 224]]
+    [[datasets.test.transforms]]
+    name = "ToTensor"
+
+### DATALOADERS ###
+[[dataloaders]]
+name = "dataloader_01"
+[dataloaders.train.kwargs]
+batch_size = 64
+num_workers = 4
+pin_memory = true
+[dataloaders.test.kwargs]
+batch_size = 64
+num_workers = 0
 
 ### MODELS ###
 
@@ -32,7 +62,7 @@ train_test_split = 0.8
 name = "model_01"
 type = "BaselineModel"
 [models.kwargs]
-input_shape = 784
+input_shape = 150528
 hidden_units = 10
 output_shape = 10
 
@@ -41,7 +71,7 @@ output_shape = 10
 name = "model_02"
 type = "CNNModel"
 [models.kwargs]
-input_shape = 1
+input_shape = 3
 hidden_units = 10
 output_shape = 10
 
