@@ -44,7 +44,8 @@ class Config:
         dataset_keys = {
             "name": str,
             "data_dir": str,
-            "transforms": list,
+            "train": dict,
+            "test": dict,
         }
         unique_dataset_names = list()
         for dataset in conf["datasets"]:
